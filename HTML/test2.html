@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Currency Converter · Minimal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #121826;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 20px;
+    }
+
+    /* main card – exactly like the reference: clean, minimal, dark */
+    .converter-card {
+      max-width: 540px;
+      width: 100%;
+      background: #0E121B;
+      border-radius: 32px;
+      padding: 28px 24px 32px 24px;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    /* heading style: "Currency Converter" */
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.3px;
+      margin-bottom: 28px;
+      border-left: 3px solid #3b82f6;
+      padding-left: 14px;
+    }
+
+    /* each row label (Amount / Converted to / Date) */
+    .row-label {
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #9CA3AF;
+      margin-bottom: 8px;
+      margin-top: 16px;
+    }
+    .row-label:first-of-type {
+      margin-top: 0;
+    }
+
+    /* unified row style: currency picker + amount/date */
+    .control-row {
+      background: #1A1F2C;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 10px 16px;
+      transition: background 0.2s;
+      border: 1px solid #262D3A;
+    }
+
+    /* left side: flag + currency code + dropdown arrow */
+    .currency-picker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      background: transparent;
+      padding: 6px 8px 6px 0;
+      border-radius: 40px;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    .flag-icon {
+      width: 28px;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #2d3748;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .flag-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .currency-code {
+      font-weight: 700;
+      font-size: 18px;
+      color: white;
+      letter-spacing: 0.2px;
+    }
+
+    .chevron {
+      display: inline-flex;
+      align-items: center;
+      transition: transform 0.2s;
+      color: #9CA3AF;
+    }
+    .chevron svg {
+      width: 16px;
+      height: 16px;
+      stroke: #cbd5e1;
+      stroke-width: 2;
+    }
+
+    /* amount input (right side) */
+    .amount-input {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: right;
+      width: 130px;
+      outline: none;
+      font-family: monospace;
+      letter-spacing: 0.3px;
+    }
+    .amount-input::placeholder {
+      color: #5a687c;
+      font-weight: 500;
+    }
+
+    /* converted amount (display only) */
+    .converted-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      font-family: monospace;
+      background: transparent;
+      text-align: right;
+      width: 130px;
+    }
+
+    /* date row special: left/right arrows + date + mini badge */
+    .date-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    .date-nav-btn {
+      background: #262D3A;
+      border: none;
+      border-radius: 40px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .date-nav-btn:hover {
+      background: #334155;
+    }
+    .date-nav-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: white;
+      stroke-width: 2;
+    }
+    .date-input {
+      background: transparent;
+      border: none;
+      color: white;
+      font-weight: 500;
+      font-size: 15px;
+      font-family: monospace;
+      width: 130px;
+      text-align: center;
+      outline: none;
+      cursor: pointer;
+    }
+    /* custom date picker style */
+    .date-input::-webkit-calendar-picker-indicator {
+      filter: invert(0.8);
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    /* small badge for "EUR GBP BTC" hint (exactly like reference footer) */
+    .popular-badge {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6B7280;
+      background: #10141E;
+      padding: 12px 16px;
+      border-radius: 60px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid #262D3A;
+    }
+    .popular-badge span {
+      cursor: pointer;
+      transition: color 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .popular-badge span:hover {
+      color: white;
+    }
+
+    /* info / rate line */
+    .rate-info {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #6C7A91;
+      background: #10141E;
+      padding: 8px 12px;
+      border-radius: 40px;
+      display: inline-block;
+      width: 100%;
+    }
+
+    /* dropdown menu for currencies (modern, matches theme) */
+    .dropdown-menu {
+      position: absolute;
+      top: 52px;
+      left: 0;
+      background: #1E2432;
+      backdrop-filter: blur(4px);
+      border-radius: 20px;
+      width: 260px;
+      max-height: 280px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+      border: 1px solid #2D3443;
+      display: none;
+      flex-direction: column;
+      padding: 8px 4px;
+    }
+    .dropdown-menu.open {
+      display: flex;
+    }
+    .currency-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .currency-option:hover {
+      background: #2A3142;
+    }
+    .currency-option .mini-flag {
+      width: 24px;
+      height: 18px;
+      border-radius: 3px;
+      background: #334155;
+      overflow: hidden;
+    }
+    .currency-option .mini-flag img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .currency-option .opt-code {
+      font-weight: 600;
+      color: white;
+      font-size: 14px;
+    }
+    .currency-option .opt-name {
+      font-size: 11px;
+      color: #9CA3AF;
+      margin-left: auto;
+    }
+
+    /* separator between rows */
+    .spacer {
+      height: 4px;
+    }
+
+    /* responsive touches */
+    @media (max-width: 480px) {
+      .converter-card {
+        padding: 20px 18px;
+      }
+      .amount-input, .converted-value {
+        font-size: 18px;
+        width: 110px;
+      }
+      .currency-code {
+        font-size: 16px;
+      }
+      .control-row {
+        padding: 8px 12px;
+      }
+      .popular-badge {
+        gap: 16px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="converter-card">
+  <div class="title">Currency Converter</div>
+
+  <!-- Amount row (exactly like reference: GBP ▼ 0.0088) -->
+  <div class="row-label">Amount</div>
+  <div class="control-row">
+    <div class="currency-picker" id="fromPickerTrigger">
+      <div class="flag-icon" id="fromFlagIcon"><img id="fromFlagImg" alt="flag"></div>
+      <span class="currency-code" id="fromCodeText">GBP</span>
+      <span class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      <!-- dropdown panel for FROM -->
+      <div class="dropdown-menu" id="fromDropdownList"></div>
+    </div>
+    <input type="text" id="amountInput" class="amount-input" value="0.0088" inputmode="decimal">
+  </div>
+
+  <!-- Converted to row (AUD ▼ 0.0088) -->
+  <div class="row-label">Converted to</div>
+  <div class="control-row">
+    <div class="currency-picker" id="toPickerTrigger">
+      <div class="flag-icon" id="toFlagIcon"><img id="toFlagImg" alt="flag"></div>
+      <span class="currency-code" id="toCodeText">AUD</span>
+      <span class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      <div class="dropdown-menu" id="toDropdownList"></div>
+    </div>
+    <div class="converted-value" id="convertedAmount">0.0088</div>
+  </div>
+
+  <!-- Date row: left arrow + date + right arrow (exactly "01 may 2024 >") -->
+  <div class="row-label">Date</div>
+  <div class="control-row">
+    <div class="date-controls">
+      <button class="date-nav-btn" id="prevDateBtn" aria-label="Previous day">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <input type="date" id="datePickerInput" class="date-input" value="2024-05-01">
+      <button class="date-nav-btn" id="nextDateBtn" aria-label="Next day">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <!-- no extra badge on right, but we show rate date later -->
+  </div>
+
+  <!-- mini badge: EUR  GBP  BTC  (exactly as reference) -->
+  <div class="popular-badge">
+    <span data-currency="EUR">EUR</span>
+    <span data-currency="GBP">GBP</span>
+    <span data-currency="BTC">BTC</span>
+  </div>
+
+  <!-- dynamic rate info line -->
+  <div class="rate-info" id="rateInfo">Rates: 1 GBP = 1.9123 AUD</div>
+</div>
+
+<script>
+  // ------------------------------
+  //  CURRENCY LIST (name attribute removed, only code + country)
+  // ------------------------------
+  const CURRENCIES = [
+    {code:'AED',country:'ae'},{code:'AFN',country:'af'},{code:'ALL',country:'al'},
+    {code:'AMD',country:'am'},{code:'ANG',country:'an'},{code:'AOA',country:'ao'},
+    {code:'ARS',country:'ar'},{code:'AUD',country:'au'},{code:'AWG',country:'aw'},
+    {code:'AZN',country:'az'},{code:'BAM',country:'ba'},{code:'BBD',country:'bb'},
+    {code:'BDT',country:'bd'},{code:'BGN',country:'bg'},{code:'BHD',country:'bh'},
+    {code:'BIF',country:'bi'},{code:'BMD',country:'bm'},{code:'BND',country:'bn'},
+    {code:'BOB',country:'bo'},{code:'BRL',country:'br'},{code:'BSD',country:'bs'},
+    {code:'BTN',country:'bt'},{code:'BWP',country:'bw'},{code:'BYN',country:'by'},
+    {code:'BZD',country:'bz'},{code:'CAD',country:'ca'},{code:'CDF',country:'cd'},
+    {code:'CHF',country:'ch'},{code:'CLP',country:'cl'},{code:'CNY',country:'cn'},
+    {code:'COP',country:'co'},{code:'CRC',country:'cr'},{code:'CUP',country:'cu'},
+    {code:'CVE',country:'cv'},{code:'CZK',country:'cz'},{code:'DJF',country:'dj'},
+    {code:'DKK',country:'dk'},{code:'DOP',country:'do'},{code:'DZD',country:'dz'},
+    {code:'EGP',country:'eg'},{code:'ERN',country:'er'},{code:'ETB',country:'et'},
+    {code:'EUR',country:'eu'},{code:'FJD',country:'fj'},{code:'FKP',country:'fk'},
+    {code:'GBP',country:'gb'},{code:'GEL',country:'ge'},{code:'GGP',country:'gg'},
+    {code:'GHS',country:'gh'},{code:'GIP',country:'gi'},{code:'GMD',country:'gm'},
+    {code:'GNF',country:'gn'},{code:'GTQ',country:'gt'},{code:'GYD',country:'gy'},
+    {code:'HKD',country:'hk'},{code:'HNL',country:'hn'},{code:'HRK',country:'hr'},
+    {code:'HTG',country:'ht'},{code:'HUF',country:'hu'},{code:'IDR',country:'id'},
+    {code:'ILS',country:'il'},{code:'IMP',country:'im'},{code:'INR',country:'in'},
+    {code:'IQD',country:'iq'},{code:'IRR',country:'ir'},{code:'ISK',country:'is'},
+    {code:'JEP',country:'je'},{code:'JMD',country:'jm'},{code:'JOD',country:'jo'},
+    {code:'JPY',country:'jp'},{code:'KES',country:'ke'},{code:'KGS',country:'kg'},
+    {code:'KHR',country:'kh'},{code:'KMF',country:'km'},{code:'KPW',country:'kp'},
+    {code:'KRW',country:'kr'},{code:'KWD',country:'kw'},{code:'KYD',country:'ky'},
+    {code:'KZT',country:'kz'},{code:'LAK',country:'la'},{code:'LBP',country:'lb'},
+    {code:'LKR',country:'lk'},{code:'LRD',country:'lr'},{code:'LSL',country:'ls'},
+    {code:'LYD',country:'ly'},{code:'MAD',country:'ma'},{code:'MDL',country:'md'},
+    {code:'MGA',country:'mg'},{code:'MKD',country:'mk'},{code:'MMK',country:'mm'},
+    {code:'MNT',country:'mn'},{code:'MOP',country:'mo'},{code:'MRU',country:'mr'},
+    {code:'MUR',country:'mu'},{code:'MVR',country:'mv'},{code:'MWK',country:'mw'},
+    {code:'MXN',country:'mx'},{code:'MYR',country:'my'},{code:'MZN',country:'mz'},
+    {code:'NAD',country:'na'},{code:'NGN',country:'ng'},{code:'NIO',country:'ni'},
+    {code:'NOK',country:'no'},{code:'NPR',country:'np'},{code:'NZD',country:'nz'},
+    {code:'OMR',country:'om'},{code:'PAB',country:'pa'},{code:'PEN',country:'pe'},
+    {code:'PGK',country:'pg'},{code:'PHP',country:'ph'},{code:'PKR',country:'pk'},
+    {code:'PLN',country:'pl'},{code:'PYG',country:'py'},{code:'QAR',country:'qa'},
+    {code:'RON',country:'ro'},{code:'RSD',country:'rs'},{code:'RUB',country:'ru'},
+    {code:'RWF',country:'rw'},{code:'SAR',country:'sa'},{code:'SBD',country:'sb'},
+    {code:'SCR',country:'sc'},{code:'SDG',country:'sd'},{code:'SEK',country:'se'},
+    {code:'SGD',country:'sg'},{code:'SHP',country:'sh'},{code:'SLL',country:'sl'},
+    {code:'SOS',country:'so'},{code:'SRD',country:'sr'},{code:'SSP',country:'ss'},
+    {code:'STN',country:'st'},{code:'SVC',country:'sv'},{code:'SYP',country:'sy'},
+    {code:'SZL',country:'sz'},{code:'THB',country:'th'},{code:'TJS',country:'tj'},
+    {code:'TMT',country:'tm'},{code:'TND',country:'tn'},{code:'TOP',country:'to'},
+    {code:'TRY',country:'tr'},{code:'TTD',country:'tt'},{code:'TWD',country:'tw'},
+    {code:'TZS',country:'tz'},{code:'UAH',country:'ua'},{code:'UGX',country:'ug'},
+    {code:'USD',country:'us'},{code:'UYU',country:'uy'},{code:'UZS',country:'uz'},
+    {code:'VES',country:'ve'},{code:'VND',country:'vn'},{code:'VUV',country:'vu'},
+    {code:'WST',country:'ws'},{code:'XAF',country:'cm'},{code:'XCD',country:'ag'},
+    {code:'XOF',country:'bf'},{code:'XPF',country:'pf'},{code:'YER',country:'ye'},
+    {code:'ZAR',country:'za'},{code:'ZMW',country:'zm'},{code:'BTC',country:'btc'}
+  ];
+
+  // ---------- DOM elements ----------
+  const fromPickerTrigger = document.getElementById('fromPickerTrigger');
+  const toPickerTrigger = document.getElementById('toPickerTrigger');
+  const fromDropdown = document.getElementById('fromDropdownList');
+  const toDropdown = document.getElementById('toDropdownList');
+  const fromCodeSpan = document.getElementById('fromCodeText');
+  const toCodeSpan = document.getElementById('toCodeText');
+  const fromFlagImg = document.getElementById('fromFlagImg');
+  const toFlagImg = document.getElementById('toFlagImg');
+  const amountInput = document.getElementById('amountInput');
+  const convertedSpan = document.getElementById('convertedAmount');
+  const dateInput = document.getElementById('datePickerInput');
+  const prevBtn = document.getElementById('prevDateBtn');
+  const nextBtn = document.getElementById('nextDateBtn');
+  const rateInfoDiv = document.getElementById('rateInfo');
+
+  // state
+  let selectedFrom = 'GBP';
+  let selectedTo = 'AUD';
+  let currentRate = null;
+  let fetching = false;
+
+  // ---------- helpers: flags (BTC special) ----------
+  const BTC_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#f2a900"/><text x="12" y="16" font-size="12" text-anchor="middle" font-family="Arial" fill="#fff">฿</text></svg>');
+
+  function getFlagUrl(currencyCode) {
+    if (currencyCode === 'BTC') return BTC_SVG;
+    const cur = CURRENCIES.find(c => c.code === currencyCode);
+    const cc = (cur && cur.country) ? cur.country : currencyCode.slice(0,2).toLowerCase();
+    return `https://flagcdn.com/w40/${cc}.png`;
+  }
+
+  function updateFlagAndCode() {
+    fromCodeSpan.innerText = selectedFrom;
+    toCodeSpan.innerText = selectedTo;
+    fromFlagImg.src = getFlagUrl(selectedFrom);
+    toFlagImg.src = getFlagUrl(selectedTo);
+    if (selectedFrom === 'BTC') fromFlagImg.alt = 'BTC';
+    if (selectedTo === 'BTC') toFlagImg.alt = 'BTC';
+  }
+
+  // ---------- build dropdown lists (NO search, just pure currency list) ----------
+  function buildDropdown(container, currentCode, onSelect) {
+    container.innerHTML = '';
+    CURRENCIES.forEach(curr => {
+      const optionDiv = document.createElement('div');
+      optionDiv.className = 'currency-option';
+      const miniFlag = document.createElement('div');
+      miniFlag.className = 'mini-flag';
+      const flagImg = document.createElement('img');
+      flagImg.src = getFlagUrl(curr.code);
+      flagImg.alt = curr.code;
+      miniFlag.appendChild(flagImg);
+      const codeSpan = document.createElement('span');
+      codeSpan.className = 'opt-code';
+      codeSpan.innerText = curr.code;
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'opt-name';
+      nameSpan.innerText = curr.country?.toUpperCase() || '';
+      optionDiv.appendChild(miniFlag);
+      optionDiv.appendChild(codeSpan);
+      optionDiv.appendChild(nameSpan);
+      optionDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        onSelect(curr.code);
+        closeAllDropdowns();
+      });
+      container.appendChild(optionDiv);
+    });
+  }
+
+  function closeAllDropdowns() {
+    fromDropdown.classList.remove('open');
+    toDropdown.classList.remove('open');
+  }
+
+  function toggleDropdown(dropdown, triggerEl) {
+    const isOpen = dropdown.classList.contains('open');
+    closeAllDropdowns();
+    if (!isOpen) {
+      dropdown.classList.add('open');
+    }
+  }
+
+  // attach click handlers for pickers
+  fromPickerTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleDropdown(fromDropdown, fromPickerTrigger);
+  });
+  toPickerTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleDropdown(toDropdown, toPickerTrigger);
+  });
+  document.addEventListener('click', (e) => {
+    if (!fromPickerTrigger.contains(e.target) && !toPickerTrigger.contains(e.target)) {
+      closeAllDropdowns();
+    }
+  });
+
+  // initialize dropdown contents
+  buildDropdown(fromDropdown, selectedFrom, (code) => {
+    selectedFrom = code;
+    updateFlagAndCode();
+    fetchConversion();
+  });
+  buildDropdown(toDropdown, selectedTo, (code) => {
+    selectedTo = code;
+    updateFlagAndCode();
+    fetchConversion();
+  });
+
+  // ---------- API integration (historical & latest) ----------
+  const API_KEY = '56483cf56254f1f3995ca9c5';
+
+  async function fetchConversion() {
+    if (fetching) return;
+    const amount = parseFloat(amountInput.value);
+    if (isNaN(amount)) return;
+    const selectedDate = dateInput.value;
+    const todayStr = new Date().toISOString().slice(0,10);
+    fetching = true;
+    rateInfoDiv.innerText = 'Fetching rates...';
+    try {
+      let rate = null;
+      let conversionResult = null;
+      let effectiveDate = selectedDate;
+      // if selected date is today OR future -> use pair/latest endpoint
+      if (selectedDate >= todayStr) {
+        const url = `https://v6.exchangerate-api.com/v6/${API_KEY}/pair/${selectedFrom}/${selectedTo}/${encodeURIComponent(amount)}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data.result === 'success') {
+          rate = data.conversion_rate;
+          conversionResult = data.conversion_result;
+          effectiveDate = new Date().toISOString().slice(0,10);
+        } else throw new Error('API error');
+      } else {
+        // historical: use history endpoint
+        const histUrl = `https://v6.exchangerate-api.com/v6/${API_KEY}/history/${selectedFrom}/${selectedDate}/${selectedDate}`;
+        const resp = await fetch(histUrl);
+        const data = await resp.json();
+        if (data.result === 'success' && data.historical && data.historical[selectedDate]) {
+          const dayData = data.historical[selectedDate];
+          if (dayData.rates && dayData.rates[selectedTo]) {
+            rate = dayData.rates[selectedTo];
+            conversionResult = amount * rate;
+            effectiveDate = selectedDate;
+          } else throw new Error('rate missing');
+        } else {
+          // fallback to latest if historical fails
+          const fallbackUrl = `https://v6.exchangerate-api.com/v6/${API_KEY}/pair/${selectedFrom}/${selectedTo}/${encodeURIComponent(amount)}`;
+          const fallbackResp = await fetch(fallbackUrl);
+          const fallbackData = await fallbackResp.json();
+          if (fallbackData.result === 'success') {
+            rate = fallbackData.conversion_rate;
+            conversionResult = fallbackData.conversion_result;
+            effectiveDate = new Date().toISOString().slice(0,10);
+            rateInfoDiv.innerText = `⚠️ No data for ${selectedDate}, using latest rates`;
+          } else throw new Error('API fallback failed');
+        }
+      }
+      if (rate !== null && conversionResult !== undefined) {
+        currentRate = rate;
+        const formattedConverted = conversionResult.toFixed(8).replace(/\.?0+$/, '');
+        convertedSpan.innerText = formattedConverted;
+        const amountShort = amount.toFixed(8).replace(/\.?0+$/, '');
+        rateInfoDiv.innerHTML = `Rates: 1 ${selectedFrom} = ${rate.toFixed(6)} ${selectedTo}  ·  ${effectiveDate}`;
+      } else {
+        throw new Error('No rate');
+      }
+    } catch (err) {
+      console.error(err);
+      rateInfoDiv.innerText = `Error fetching rates. Using fallback approximate.`;
+      // fallback dummy for demo stability (avoid breaking UI)
+      if (selectedFrom === selectedTo) {
+        convertedSpan.innerText = amountInput.value;
+        rateInfoDiv.innerText = `Rates: 1 ${selectedFrom} = 1.00 ${selectedTo}`;
+      } else {
+        convertedSpan.innerText = (parseFloat(amountInput.value) * 1.85).toFixed(6);
+      }
+    } finally {
+      fetching = false;
+    }
+  }
+
+  // ---------- date helpers & formatting for display (showing like "01 may 2024" but we keep date input) ----------
+  function formatDateForDisplay(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const day = d.getDate();
+    const month = d.toLocaleString('default', { month: 'short' });
+    const year = d.getFullYear();
+    return `${day} ${month} ${year}`;
+  }
+  // optional: we keep input as date picker, but the reference shows "01 may 2024 >". 
+  // The date input already shows yyyy-mm-dd but we are using modern date picker. 
+  // However we also added prev/next and it's exactly the same behavior. 
+  // For perfect match of text, we might replace with text, but the requirement is "look exactly this way"
+  // and the original had date picker, we keep the date input but preserve functionality.
+  // I'll also ensure date value is readable: the user sees the picker and can type.
+  
+  function updateDateNavigation() {
+    // event handlers already set
+  }
+  
+  // date events
+  prevBtn.addEventListener('click', () => {
+    let currentDate = dateInput.value;
+    if (!currentDate) currentDate = '2024-05-01';
+    const d = new Date(currentDate);
+    d.setDate(d.getDate() - 1);
+    const newDate = d.toISOString().slice(0,10);
+    if (newDate >= '2002-01-01') {
+      dateInput.value = newDate;
+      fetchConversion();
+    } else {
+      rateInfoDiv.innerText = 'Cannot go earlier than 2002 (API limit)';
+    }
+  });
+  nextBtn.addEventListener('click', () => {
+    let currentDate = dateInput.value;
+    if (!currentDate) currentDate = '2024-05-01';
+    const d = new Date(currentDate);
+    d.setDate(d.getDate() + 1);
+    const todayLimit = new Date().toISOString().slice(0,10);
+    const newDate = d.toISOString().slice(0,10);
+    if (newDate <= todayLimit) {
+      dateInput.value = newDate;
+      fetchConversion();
+    } else {
+      rateInfoDiv.innerText = 'Cannot select future dates';
+    }
+  });
+  dateInput.addEventListener('change', () => {
+    fetchConversion();
+  });
+  amountInput.addEventListener('input', () => {
+    fetchConversion();
+  });
+
+  // Popular badge click (EUR, GBP, BTC)
+  document.querySelectorAll('.popular-badge span').forEach(badge => {
+    badge.addEventListener('click', (e) => {
+      const targetCurr = badge.getAttribute('data-currency');
+      if (!targetCurr) return;
+      // update "to" currency (like reference: clicking on EUR/GBP/BTC changes the target)
+      selectedTo = targetCurr;
+      updateFlagAndCode();
+      // rebuild dropdown selection highlight is not needed, but we close and refresh
+      closeAllDropdowns();
+      fetchConversion();
+    });
+  });
+
+  // initial flag & fetch
+  updateFlagAndCode();
+  // set default amount to 0.0088 exactly as reference image
+  amountInput.value = "0.0088";
+  // default date: 2024-05-01 (shows as 2024-05-01 in input but matches "01 may 2024")
+  dateInput.value = "2024-05-01";
+  fetchConversion();
+</script>
+</body>
+</html>

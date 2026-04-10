@@ -64,7 +64,75 @@
     max-width: 1440px;
     max-height: 759px;
     /* Diagonal gradient - top-left bright, bottom-right dark */
-    background: linear-gradient(135deg, #1e56e0, #0d2b9e);
-    /* Left to right gradient */
-    /* background: linear-gradient(to right, #1e56e0, #0d2b9e); */
+    background: linear-gradient(to right, #2752E7, #0B2271);
+}
+.currency-converter{
+    /* width: 491px; */
+    height: 491px;
+    border-radius: 20px;
+}
+/* Coverter container*/
+.converter-container {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    padding: 40px;
+    border-radius: 30px;
+    width: 400px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+.input-row {
+    /* background: rgba(255, 255, 255, 0.08); */
+    background-color: rgb(208, 233, 236);
+    color: black;
+    display: flex;
+    align-items: center;
+    padding: 12px 18px;
+    border-radius: 15px;
+    margin-top: 8px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.currency-select {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.currency-select img {
+    width: 28px;
+    border-radius: 4px;
+}
+
+select {
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+}
+
+.divider {
+    width: 1px;
+    height: 25px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 0 15px;
+}
+
+input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    outline: none;
+    flex-grow: 1;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Makes the calendar icon white */
 }
